@@ -3,14 +3,25 @@ name: Continuous Integration
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  Validacao-Inicial-HTML: # Nome descritivo (Exercício 4)
-    runs-on: ubuntu-latest # O coração do Dia 5
-    
+  Validacao-Web:
+    runs-on: ubuntu-latest
     steps:
+      # Passo 1: O "Lego" que baixa seu código para o servidor
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Verificar versão do SO
-        run: lsb_release -a # Comando Linux para ver detalhes do Runner
+      # Passo 2: O "Lego" que valida se seu HTML tem erros de tags
+      - name: Validar sintaxe do HTML
+        uses: htmlhint/htmlhint-action@v2
+        with:
+          target_pattern: 'index.html'
+
+      # Passo 3: Um comando simples para confirmar que tudo está no lugar
+      - name: Checar arquivos finais
+        run: |
+          ls -R
+          echo "O Runner finalizou a checagem com sucesso!"
