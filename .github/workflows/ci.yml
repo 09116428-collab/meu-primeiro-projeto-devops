@@ -1,28 +1,16 @@
 name: Continuous Integration
 
-# 1. Definindo os GATILHOS (Triggers)
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
-# 2. Definindo o que deve ser feito (Jobs)
 jobs:
-  validacao-estatica:
-    runs-on: ubuntu-latest
+  Validacao-Inicial-HTML: # Nome descritivo (Exercício 4)
+    runs-on: ubuntu-latest # O coração do Dia 5
+    
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Em vez de Node, vamos apenas validar se os arquivos essenciais existem
-      - name: Verificar arquivos do site
-        run: |
-          ls -la
-          test -f index.html && echo "HTML encontrado!"
-          test -f style.css && echo "CSS encontrado!"
-
-      - name: Mensagem de Sucesso
-        run: echo "O Workflow de infraestrutura rodou com sucesso!"
+      - name: Verificar versão do SO
+        run: lsb_release -a # Comando Linux para ver detalhes do Runner
