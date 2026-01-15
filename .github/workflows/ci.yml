@@ -3,19 +3,25 @@ name: Continuous Integration
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  Validacao-Web:
+  Pipeline-de-Preparacao:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Usando um comando direto (script) para validar o HTML, 
-      # assim não dependemos de repositórios externos que podem sumir.
-      - name: Validar sintaxe do HTML
+      - name: Preparando Versão de Produção
         run: |
-          echo "Iniciando validação..."
-          test -f index.html && echo "Arquivo index.html encontrado!" || exit 1
+          echo "🚀 Iniciando Pipeline de Preparação..."
+          
+          # 1. Criando a pasta de distribuição (dist)
+          mkdir -p dist
+          
+          # 2. Movendo arquivos para a pasta de produção
+          cp index.html dist/
+          cp style.css dist/ 2>/dev/null || echo "Aviso: style.css não encontrado, ignorando."
+          
+          # 3. Verificando se a pasta dist está pronta
+          ls -R dist/
+          echo "✅ Pasta de produção (dist) gerada com sucesso!"
