@@ -1,27 +1,37 @@
-name: Continuous Integration
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  Pipeline-de-Preparacao:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Preparando Versão de Produção
-        run: |
-          echo "🚀 Iniciando Pipeline de Preparação..."
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
           
-          # 1. Criando a pasta de distribuição (dist)
-          mkdir -p dist
-          
-          # 2. Movendo arquivos para a pasta de produção
-          cp index.html dist/
-          cp style.css dist/ 2>/dev/null || echo "Aviso: style.css não encontrado, ignorando."
-          
-          # 3. Verificando se a pasta dist está pronta
-          ls -R dist/
-          echo "✅ Pasta de produção (dist) gerada com sucesso!"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
