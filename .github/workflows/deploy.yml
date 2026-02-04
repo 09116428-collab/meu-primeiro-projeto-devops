@@ -1,15 +1,18 @@
 name: Deploy to GitHub Pages
 
+# Gatilhos: Quando o robô deve trabalhar
 on:
   push:
     branches: ["main", "master"]
   workflow_dispatch:
 
+# Permissões: O "crachá" de acesso do robô
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Concorrência: Organiza a fila de deploys
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -19,19 +22,30 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    
+    # O Servidor (Runner): Onde a mágica acontece
     runs-on: ubuntu-latest
+
     steps:
+      # Passo 1: Baixa o seu código para o servidor
       - name: Checkout
         uses: actions/checkout@v4
-      
+
+      # 🚀 Passo 2 (Foco Dia 05): Interagindo com o sistema operacional do Runner
+      - name: Verificar versão do SO (Explorando o Linux)
+        run: lsb_release -a
+
+      # Passo 3: Configura o ambiente para o GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
+      # Passo 4: Empacota o site (HTML/CSS) para o servidor
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '.' # Define que o site está na raiz do projeto
           
+      # Passo 5: Publica o site oficialmente
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
