@@ -23,29 +23,49 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     
-    # O Servidor (Runner): Onde a mágica acontece
     runs-on: ubuntu-latest
 
     steps:
-      # Passo 1: Baixa o seu código para o servidor
+      # Passo 1: Baixa o seu código (Obrigatório!)
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 🚀 Passo 2 (Foco Dia 05): Interagindo com o sistema operacional do Runner
-      - name: Verificar versão do SO (Explorando o Linux)
-        run: lsb_release -a
+      # Passo 2: Validar a sintaxe ANTES de preparar a entrega
+      - name: Validar sintaxe do HTML
+        uses: htmlhint/htmlhint-action@v2
+        with:
+          target_pattern: 'index.html'
 
-      # Passo 3: Configura o ambiente para o GitHub Pages
+      # Passo 3: PIPELINE DE PREPARAÇÃO
+      - name: Preparando Versão de Produção (Build)
+        run: |
+          echo "Iniciando Pipeline de Preparação..."
+          
+          # Criando a pasta de distribuição (dist)
+          mkdir -p dist
+          
+          # Movendo arquivos para a pasta de produção
+          cp index.html dist/
+          
+          # Tenta copiar o CSS se ele existir
+          cp style.css dist/ 2>/dev/null || echo "Aviso: style.css não encontrado."
+          
+          # Verificando se a pasta dist está correta
+          ls -R dist/
+          echo "Pasta de produção (dist) gerada com sucesso!"
+
+      # Passo 4: Configura o ambiente para o GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
-      # Passo 4: Empacota o site (HTML/CSS) para o servidor
+      # Passo 5: Empacota o site APENAS da pasta DIST
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # Define que o site está na raiz do projeto
+          # IMPORTANTE: Mudamos de '.' para 'dist'
+          path: 'dist' 
           
-      # Passo 5: Publica o site oficialmente
+      # Passo 6: Publica o site oficialmente
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
